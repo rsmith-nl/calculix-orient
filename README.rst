@@ -5,7 +5,7 @@ calculix-orient
 :tags: CalculiX
 :author: Roland Smith
 
-.. Last modified: 2022-12-23T07:51:21+0100
+.. Last modified: 2022-12-24T10:43:04+0100
 .. vim:spelllang=en
 
 This program examines a CalculiX mesh, and generates orientations for the
@@ -21,6 +21,7 @@ Assumptions
 
 This program makes the following assumptions:
 
+* The long axis of the mesh is in the +X direction.
 * The directory in which it is invoked contains only one simulation.
 * The file ``all.msh`` contains all nodes and elements
 * The files ``*.nam`` contain the definitions of sets.
