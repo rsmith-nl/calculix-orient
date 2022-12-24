@@ -5,7 +5,7 @@ calculix-orient
 :tags: CalculiX
 :author: Roland Smith
 
-.. Last modified: 2022-12-24T10:43:04+0100
+.. Last modified: 2022-12-24T15:35:21+0100
 .. vim:spelllang=en
 
 This program examines a CalculiX mesh, and generates orientations for the
@@ -27,10 +27,25 @@ This program makes the following assumptions:
 * The files ``*.nam`` contain the definitions of sets.
 * It only processes C3D20(R) elements.
 
+Usage
+=====
+
+Run the script from a directory that has ``all.msh`` and the
+``<setname>.nam`` file(s) that contains the set that you want to orient.
+
+This writes a file a file ``auto-orient.nam``.
+Include this in your job input file.
+It containts new element sets and orientations.
+
+It also contains ``SOLID SECTION`` as comments.
+Use those to replace the solid section for the original set.
+Do not forget to set the material.
+
+
 Calculations
 ============
 
-Directory: ``~/calculix/sandwich-box-tie-rounded/``.
+Example: ``~/calculix/sandwich-box-tie-rounded/``.
 Radius elements: set ``Elrad``.
 
 Element 1321::
@@ -75,73 +90,3 @@ Nodes::
 
     In [13]: normalize(sub(v7526, v7525))
     Out[13]: (1.0, 0.0, 0.0)
-
-
-
-
-Appendix
-========
-
-Helper functions
-
-.. code-block:: python
-
-    def cross(u, v):
-        """
-        Create the cross-product of two vectors
-
-         Arguments:
-             u: 3-tuple of numbers
-             v: 3-tuple of numbers
-
-         Returns:
-             The cross-product between the vectors.
-        """
-        return (
-                u[1] * v[2] - u[2] * v[1],
-                u[2] * v[0] - u[0] * v[2],
-                u[0] * v[1] - u[1] * v[0],
-        )
-
-    def sub(u, v):
-        """
-        Create the difference between two vectors.
-
-         Arguments:
-             u: 3-tuple of numbers
-             v: 3-tuple of numbers
-
-         Returns:
-             The cross-product between the vectors.
-        """
-        return (
-            u[0] - v[0],
-            u[1] - v[1],
-            u[2] - v[2],
-        )
-
-     def normalize(v):
-         """
-         Scale the vector to lentgh 1.
-
-         Arguments:
-             v: tuple of numbers
-
-         Returns:
-             The scaled tuple.
-         """
-         ln = length(v)
-         return tuple(j / ln for j in v)
-
-
-     def length(v):
-         """
-         Calculate the length of a vector.
-
-         Arguments:
-             v: tuple of numbers
-
-         Returns:
-             The length of the vector.
-         """
-         return sum(j * j for j in v) ** 0.5
