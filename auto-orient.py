@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+# file: auto-orient.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
+#
+# Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
+# SPDX-License-Identifier: MIT
+# Created: 2022-12-22T22:45:41+0100
+# Last modified: 2022-12-24T15:44:27+0100
 """Generate orientations and sets of elements that use them for a given
 initial set of elements."""
 
