@@ -28,24 +28,40 @@ def main():
     logging.info(f"“{args.set}” contains {len(nlist)} unique normals")
     result = []
     n = 1
-    for normal, elnums in nlist:
-        logging.debug(f"normal ({normal[0]}, {normal[1]}, {normal[2]})")
-        factorx = dot(normal, (1.0, 0.0, 0.0))
-        if not math.isclose(factorx, 0.0):
-            locx = normalize((normal[0]+factorx, normal[1], normal[2]))
-        else:
-            logging.debug("local x matches global")
-            locx = (1.0, 0.0, 0.0)
-        factory = dot(normal, (0.0, 1.0, 0.0))
-        if not math.isclose(factory, 0.0):
-            locy = normalize((normal[0], normal[1]+factory, normal[2]))
-        else:
-            logging.debug("local y matches global")
-            locy = (0.0, 1.0, 0.0)
-        result.append((locx, locy, elnums))
-        logging.debug(f"*ORIENTATION, NAME=auor{n}, SYSTEM=RECTANGULAR")
-        logging.debug(f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}")
-        n += 1
+    with open("auto-orient.nam", "wt") as outf:
+        for normal, elnums in nlist:
+            logging.debug(f"normal ({normal[0]}, {normal[1]}, {normal[2]})")
+            factorx = dot(normal, (1.0, 0.0, 0.0))
+            if math.isclose(factorx, 1.0):
+                logging.warning("normal lies in global X")
+                locx = (0.0, 0.0, -1.0)
+                locy = (0.0, 1.0, 0.0)
+            elif math.isclose(factorx, 0.0):
+                logging.warning("normal is perpendicular to global X")
+                locx = (1.0, 0.0, 0.0)
+            else:
+                locx = normalize((normal[0] + factorx, normal[1], normal[2]))
+            factory = dot(normal, (0.0, 1.0, 0.0))
+            if math.isclose(factory, 1.0):
+                logging.warning("normal lies in global Y")
+                locx = (1.0, 0.0, 0.0)
+                locy = (0.0, 0.0, -1.0)
+            elif math.isclose(factory, 0.0):
+                logging.warning("normal is perpendicular to global Y")
+                locy = (0.0, 1.0, 0.0)
+            else:
+                locy = normalize((normal[0], normal[1] + factory, normal[2]))
+            result.append((locx, locy, elnums))
+            outf.write(f"*ORIENTATION, NAME=aor{n}, SYSTEM=RECTANGULAR" + os.linesep)
+            # We're using full precision here. Orientations are *very* sensitive
+            outf.write(f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}")
+            outf.write(os.linesep + os.linesep)
+            outf.write(f"*ELSET,ELSET=Eaor{n}" + os.linesep)
+            for number in elnums:
+                outf.write(f"{number}," + os.linesep)
+            outf.write(f"** *SOLID SECTION, ELSET=Eaor{n}, ORIENTATION=aor{n}, MATERIAL=?")
+            outf.write(os.linesep + os.linesep)
+            n += 1
 
 
 def setup():
@@ -176,13 +192,13 @@ def set_normals(elements):
 def isclose(u, v, rel_tol=1e-3):
     """Determine if two vectors are close.
 
-        Arguments:
-            u: 3-tuple of numbers
-            v: 3-tuple of numbers
-            rel_tol: relative tolerance
+    Arguments:
+        u: 3-tuple of numbers
+        v: 3-tuple of numbers
+        rel_tol: relative tolerance
 
-        Returns:
-            True is u anv v are equal, False otherwise
+    Returns:
+        True is u anv v are equal, False otherwise
     """
     return all(math.isclose(u[j], v[j], rel_tol=rel_tol) for j in (0, 1, 2))
 
