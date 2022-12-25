@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2022-12-25T01:02:35+0100
+# Last modified: 2022-12-25T13:21:08+0100
 """Generate orientations and sets of elements that use them for a given
 initial set of elements."""
 
@@ -20,7 +20,7 @@ __version__ = "2022.12.22"
 
 def main():
     """
-    Entry point for calculix-orient.py.
+    Entry point for auto-orient.py
     """
     args = setup()
     # Real work starts here.
@@ -74,7 +74,12 @@ def main():
 
 
 def setup():
-    """Program initialization"""
+    """
+    Program initialization
+
+    Returns:
+        a namespace populated with the supplied arguments.
+    """
     # Process command-line arguments
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("-v", "--version", action="version", version=__version__)
@@ -111,12 +116,12 @@ def read_allmsh():
     """
     Read and return the elements from “all.msh”
 
-        Arguments:
-            none
+    Arguments:
+        none
 
-        Returns:
-            A dict of all the elements indexed by element number.
-            Node numbers have been resolved to the actual nodes.
+    Returns:
+        A dict of all the elements indexed by element number.
+        Node numbers have been resolved to the actual nodes.
     """
     with open("all.msh") as f:
         lines = [ln.strip() for ln in f.readlines()]
@@ -156,12 +161,12 @@ def read_named_set(setname, elements):
     """
     Read a named set of elements
 
-        Arguments:
-            setname: name of the set to read.
-            elements: dictionary of elements, indexed by element number.
+    Arguments:
+        setname: name of the set to read.
+        elements: dictionary of elements, indexed by element number.
 
-        Returns:
-            A dictionary of the elements in the named set.
+    Returns:
+        A dictionary of the elements in the named set.
     """
     if not setname.endswith(".nam"):
         setname += ".nam"
@@ -183,11 +188,12 @@ def set_normals(elements):
     """
     Determine the unique normals of the elements in the set.
 
-        Arguments:
-            elements: a dictionary of elements
+    Arguments:
+        elements: a dictionary of elements
 
-        Returns:
-            a list of 2-tuples of (normal vector, (relevant elements)).
+    Returns:
+        A list of 2-tuples. Each tuple consists of a normal vector (3-tuple of float)
+        and a tuple of element numbers that have this normal vector.
     """
     ndict = {}
     for num, nodes in elements.items():
@@ -221,12 +227,12 @@ def cross(u, v):
     """
     Create the cross-product of two vectors
 
-        Arguments:
-            u: 3-tuple of numbers
-            v: 3-tuple of numbers
+    Arguments:
+        u: 3-tuple of numbers
+        v: 3-tuple of numbers
 
-        Returns:
-            The cross-product between the vectors.
+    Returns:
+        The cross-product between the vectors.
     """
     return (
         u[1] * v[2] - u[2] * v[1],
@@ -239,12 +245,12 @@ def dot(u, v):
     """
     Create the dot-product of two vectors
 
-        Arguments:
-            u: 3-tuple of numbers
-            v: 3-tuple of numbers
+    Arguments:
+        u: 3-tuple of numbers
+        v: 3-tuple of numbers
 
-        Returns:
-            The dot-product between the vectors.
+    Returns:
+        The dot-product between the vectors.
     """
     return u[0] * v[0] + u[1] * v[1] + u[2] * v[2]
 
@@ -253,12 +259,12 @@ def sub(u, v):
     """
     Create the difference between two vectors.
 
-        Arguments:
-            u: 3-tuple of numbers
-            v: 3-tuple of numbers
+    Arguments:
+        u: 3-tuple of numbers
+        v: 3-tuple of numbers
 
-        Returns:
-            The cross-product between the vectors.
+    Returns:
+        The cross-product between the vectors.
     """
     return (
         u[0] - v[0],
