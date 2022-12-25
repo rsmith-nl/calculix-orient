@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2022-12-24T15:44:27+0100
+# Last modified: 2022-12-25T01:02:35+0100
 """Generate orientations and sets of elements that use them for a given
 initial set of elements."""
 
@@ -29,7 +29,9 @@ def main():
         sys.exit(1)
     all_elements = read_allmsh()
     logging.info(f"read {len(all_elements)} elements from “all.msh”")
-    elements = read_named_set(args.set, all_elements)
+    elements = {}
+    for setname in args.set:
+        elements.update(read_named_set(setname, all_elements))
     logging.info(f"read {len(elements)} elements from set “{args.set}”")
     nlist = set_normals(elements)
     logging.info(f"“{args.set}” contains {len(nlist)} unique normals")
@@ -44,7 +46,7 @@ def main():
                 locx = (0.0, 0.0, -1.0)
                 locy = (0.0, 1.0, 0.0)
             elif math.isclose(factorx, 0.0):
-                logging.warning("normal is perpendicular to global X")
+                logging.info("normal is perpendicular to global X")
                 locx = (1.0, 0.0, 0.0)
             else:
                 locx = normalize((normal[0] + factorx, normal[1], normal[2]))
@@ -54,7 +56,7 @@ def main():
                 locx = (1.0, 0.0, 0.0)
                 locy = (0.0, 0.0, -1.0)
             elif math.isclose(factory, 0.0):
-                logging.warning("normal is perpendicular to global Y")
+                logging.info("normal is perpendicular to global Y")
                 locy = (0.0, 1.0, 0.0)
             else:
                 locy = normalize((normal[0], normal[1] + factory, normal[2]))
@@ -84,9 +86,9 @@ def setup():
     )
     parser.add_argument(
         "set",
-        type=str,
         default="",
-        help="filename of the set to look process",
+        nargs="*",
+        help="filenames of the sets to process",
     )
     argv = sys.argv[1:]
     args = parser.parse_args(argv)
@@ -97,6 +99,11 @@ def setup():
     )
     logging.debug(f"command-line arguments: {argv}")
     logging.debug(f"processed arguments: {args}")
+    if isinstance(args.set, str):
+        if not args.set:
+            logging.error("no set given; exiting")
+            sys.exit(5)
+        args.set = [args.set]
     return args
 
 
