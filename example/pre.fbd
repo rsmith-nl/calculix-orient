@@ -1,0 +1,26 @@
+# vim:fileencoding=utf-8:fdm=marker:ft=cgx
+# All values in SI units: m,s,kg,N,Pa,J
+# (length,time,mass,force,stress,energy).
+
+read geom.fbd
+
+asgn n 2
+elty all he20r
+mesh all
+
+seta nodes n all
+enq nodes fix rec 0 _ _ 0.0001
+enq nodes load rec L _ _ 0.0001
+
+view elem
+plus n fix r 4
+plus n load b 4
+
+node 1 L 0 0.007
+seta load n 1
+
+# Write data
+send all abq
+send laminate abq nam
+send fix abq nam
+send load abq nam

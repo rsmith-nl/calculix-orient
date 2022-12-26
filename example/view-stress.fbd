@@ -1,0 +1,34 @@
+
+# vim:fileencoding=utf-8:ft=cgx
+
+# Read result data
+read job.frd
+# Read input data (sets)
+read job.inp
+
+# mirror
+#copy all new mir y
+#comp all do
+
+# First line of text below the window.
+capt Carbon/epoxy omega profile
+# Second line of text.
+ulin Worst principal stress
+
+# Define the view.
+rot y
+rot r 45
+rot u 30
+frame
+
+# Stress
+# Use the “turbo” colormap.
+cmap turbo
+# ds 4 is zzstr. e23 is worstPS
+ds 4 e 23
+# View the deformed state.
+view disp
+# Don't use shading.
+view sh off
+# Show the element borders
+view elem

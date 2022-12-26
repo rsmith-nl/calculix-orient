@@ -1,0 +1,19 @@
+
+# vim:fileencoding=utf-8:ft=cgx
+
+# Read the mesh.
+read all.msh inp
+
+# First line of text below the window.
+capt Caption
+# Second line of text.
+ulin Mesh
+
+# Define the view.
+rot y
+rot r 135
+rot u 30
+frame
+
+# Show the element edges
+view elem

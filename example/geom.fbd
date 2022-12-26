@@ -1,0 +1,79 @@
+# vim:fileencoding=utf-8:fdm=marker:ft=cgx
+# All values in SI units: m,s,kg,N,Pa,J
+# (length,time,mass,force,stress,energy).
+
+rot y
+rot u 30
+rot r 20
+zoom 0.8
+
+valu ldiv 4
+valu tdiv 6
+valu rdiv 8
+
+# Horizontal rectangle below
+pnt P1 0 0 0
+pnt P2 0 0 0.002
+pnt P3 0 0.006 0
+pnt P4 0 0.006 0.002
+line L1 P1 P3 ldiv
+line L2 P3 P4 tdiv
+line L3 P4 P2 ldiv
+line L4 P2 P1 tdiv
+surf S1 L1 L2 L3 L4
+
+# Arc up
+pnt P5 0 0.006 0.004 # arc center
+pnt P6 0 0.008 0.004
+pnt P7 0 0.010 0.004
+line L5 P4 P6 P5 rdiv
+line L6 P3 P7 P5 rdiv
+line L7 P6 P7 tdiv
+surf S2 L6 L7 L5 L2
+
+# vertical rectangle
+pnt P8 0 0.008 0.008
+pnt P9 0 0.010 0.008
+line L8 P7 P9 ldiv
+line L9 P9 P8 tdiv
+line L10 P8 P6 ldiv
+surf S3 L8 L9 L10 L7
+
+# Arc to horizontal
+pnt P10 0 0.012 0.008
+pnt P11 0 0.012 0.010
+pnt P12 0 0.012 0.012
+line L11 P9 P11 P10 rdiv
+line L12 P11 P12 tdiv
+line L13 P12 P8 P10 rdiv
+surf S4 L11 L12 L13 L9
+
+# Horizontal rectangle top right
+pnt P13 0 0.02 0.010
+pnt P14 0 0.02 0.012
+line L14 P11 P13 ldiv
+line L15 P13 P14 tdiv
+line L16 P14 P12 ldiv
+surf S5 L14 L15 L16 L12
+
+seta section s S1 S2 S3 S4 S5
+copy section sectionl mir y a
+seta section se sectionl
+comp section do
+merg p section
+merg l section
+
+# show
+#plot pa all
+#plus la all
+#rot y
+#rot r 90
+#frame
+#zoom 0.8
+
+valu L 0.1
+valu Ldiv 32
+
+seto laminate
+swep section new tra L 0 0 Ldiv
+setc
