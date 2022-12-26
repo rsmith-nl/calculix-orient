@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2022-12-25T13:21:08+0100
+# Last modified: 2022-12-26T09:47:34+0100
 """Generate orientations and sets of elements that use them for a given
 initial set of elements."""
 
@@ -15,7 +15,7 @@ import math
 import os
 import sys
 
-__version__ = "2022.12.22"
+__version__ = "2022.12.26"
 
 
 def main():
@@ -198,6 +198,9 @@ def set_normals(elements):
     ndict = {}
     for num, nodes in elements.items():
         normal = normalize(cross(sub(nodes[1], nodes[0]), sub(nodes[2], nodes[1])))
+        # Make normals +z
+        if normal[2] < 0:
+            normal = (-normal[0], -normal[1], -normal[2])
         found = False
         for n in ndict.keys():
             if isclose(normal, n):
@@ -209,18 +212,17 @@ def set_normals(elements):
     return list(ndict.items())
 
 
-def isclose(u, v, rel_tol=1e-3):
+def isclose(u, v):
     """Determine if two vectors are close.
 
     Arguments:
         u: 3-tuple of numbers
         v: 3-tuple of numbers
-        rel_tol: relative tolerance
 
     Returns:
         True is u anv v are equal, False otherwise
     """
-    return all(math.isclose(u[j], v[j], rel_tol=rel_tol) for j in (0, 1, 2))
+    return all(math.isclose(u[j], v[j]) for j in (0, 1, 2))
 
 
 def cross(u, v):
