@@ -71,8 +71,8 @@ merg l section
 #frame
 #zoom 0.8
 
-valu L 0.1
-valu Ldiv 32
+valu L 0.5
+valu Ldiv 160
 
 seto laminate
 swep section new tra L 0 0 Ldiv

@@ -3,25 +3,23 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2022-12-26T10:13:23+0100
-# Last modified: 2022-12-26T10:16:43+0100
+# Last modified: 2022-12-27T10:01:41+0100
 .PHONY: mesh disp stress core clean include
 
 all: all.msh job.frd
 
 # Run the pre-processor
-all.msh: pre.fbd
+all.msh: pre.fbd geom.fbd
 	cgx -bg pre.fbd
 
+# This command generates both auto-orient.nam and auto-orient.inp
 auto-orient.nam: all.msh
-	python ../auto-orient.py laminate.nam
-
-sections.inp: auto-orient.nam
-	awk '/SOLID/ {print $$2, $$3, $$4, $$5, "MATERIAL=Mqi"}' auto-orient.nam >sections.inp
+	python ../auto-orient.py -m Mqi laminate.nam
 
 # Run the solver
 # Note: to take advantage of multiple cores,
 # OMP_NUM_THREADS should be set in the environment.
-job.frd: job.inp sections.inp
+job.frd: job.inp auto-orient.nam
 	ccx -i job
 	rm -f job.log spooles.out *.12d *.cvg *.sta
 	rm -f *Miss*.nam

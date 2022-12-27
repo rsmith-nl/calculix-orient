@@ -27,12 +27,12 @@ Nfix,1,3
 *DENSITY
 1490
 ** Apply material properties to element sets.
-*INCLUDE, INPUT=sections.inp
+*INCLUDE, INPUT=auto-orient.inp
 ***** Static calculation with concentrated load on rigid body. *****
 *STEP
 *STATIC
 *CLOAD
-1,3,-1000
+1,3,-200
 *NODE FILE
 U,RF
 *EL FILE
