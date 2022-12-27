@@ -5,7 +5,7 @@ calculix-orient
 :tags: CalculiX
 :author: Roland Smith
 
-.. Last modified: 2022-12-26T11:11:22+0100
+.. Last modified: 2022-12-27T10:10:46+0100
 .. vim:spelllang=en
 
 This program examines a CalculiX mesh, and generates orientations for the
@@ -45,18 +45,13 @@ Run the file as follows::
 where ``set1.nam`` and ``set2.nam`` are the names of files that define the sets that
 have to be oriented.
 
-This writes a file a file ``auto-orient.nam``.
-Include this in your job input file.
-It containts new element sets and orientations.
+This writes two files; ``auto-orient.nam`` and ``auto-orient.inp``
+Include these in your job input file.
+The first file containts new element sets and orientations, while the second
+contains the ``SOLID SECTION`` commands.
+If the ``-m`` or ``--mat`` argument to ``auto-orient.py`` is used, the
+given material is used for all the the solid sections.
 
-It also contains ``SOLID SECTION`` as comments.
-Use those to replace the solid section for the original set.
-Do not forget to set the material.
-The author likes to do this automatically using e.g. ``awk``::
-
-    awk '/SOLID/ {print $2, $3, $4, $5, "MATERIAL=Mqi"}' auto-orient.nam >sections.inp
-
-The file ``sections.inp`` is then included in the job input file.
 
 Example
 =======
@@ -66,14 +61,16 @@ a CalculiX workflow.
 
 The subject of this simulation is an omega profile made from carbon fiber and
 epoxy, in a quasi-isotropic layup.
+This geometry should have several many different orientations, depending on how fine the
+mesh is.
+
 
 The workflow (in a terminal emulator) is as follows:
 
 1) Run the preprocessor: ``cgx -bg pre.fbd``
 2) Run the auto-orient program: ``python auto-orient.py laminate.nam``
-3) Create solid sections: ``awk '/SOLID/ {print $$2, $$3, $$4, $$5, "MATERIAL=Mqi"}' auto-orient.nam >sections.inp``
-4) Run the solver: ``ccx -i job``
-5) Clean up after a succesfull run: ``rm -f job.log spooles.out *.12d *.cvg *.sta *Miss*.nam``
+3) Run the solver: ``ccx -i job``
+4) Clean up after a succesfull run: ``rm -f job.log spooles.out *.12d *.cvg *.sta *Miss*.nam``
 
 .. note:: for ms-windows users. In the list above you should replace ``rm``
    with ``del``. If ``awk`` is not available, edit ``auto-orient.nam`` and

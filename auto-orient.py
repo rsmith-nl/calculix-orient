@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2022-12-26T09:47:34+0100
+# Last modified: 2022-12-27T09:59:14+0100
 """Generate orientations and sets of elements that use them for a given
 initial set of elements."""
 
@@ -37,7 +37,9 @@ def main():
     logging.info(f"“{args.set}” contains {len(nlist)} unique normals")
     result = []
     n = 1
-    with open("auto-orient.nam", "wt") as outf:
+    with open("auto-orient.nam", "wt") as outnam, open(
+        "auto-orient.inp", "wt"
+    ) as outinp:
         for normal, elnums in nlist:
             logging.debug(f"normal ({normal[0]}, {normal[1]}, {normal[2]})")
             factorx = dot(normal, (1.0, 0.0, 0.0))
@@ -61,15 +63,19 @@ def main():
             else:
                 locy = normalize((normal[0], normal[1] + factory, normal[2]))
             result.append((locx, locy, elnums))
-            outf.write(f"*ORIENTATION, NAME=aor{n}, SYSTEM=RECTANGULAR" + os.linesep)
+            outnam.write(f"*ORIENTATION, NAME=aor{n}, SYSTEM=RECTANGULAR" + os.linesep)
             # We're using full precision here. Orientations are *very* sensitive
-            outf.write(f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}")
-            outf.write(os.linesep + os.linesep)
-            outf.write(f"*ELSET,ELSET=Eaor{n}" + os.linesep)
+            outnam.write(
+                f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}"
+            )
+            outnam.write(os.linesep + os.linesep)
+            outnam.write(f"*ELSET,ELSET=Eaor{n}" + os.linesep)
             for number in elnums:
-                outf.write(f"{number}," + os.linesep)
-            outf.write(f"** *SOLID SECTION, ELSET=Eaor{n}, ORIENTATION=aor{n}, MATERIAL=?")
-            outf.write(os.linesep + os.linesep)
+                outnam.write(f"{number}," + os.linesep)
+            outinp.write(
+                f"*SOLID SECTION, ELSET=Eaor{n}, ORIENTATION=aor{n}, MATERIAL={args.mat}"
+            )
+            outinp.write(os.linesep)
             n += 1
 
 
@@ -88,6 +94,12 @@ def setup():
         default="warning",
         choices=["debug", "info", "warning", "error"],
         help="logging level (defaults to 'warning')",
+    )
+    parser.add_argument(
+        "-m",
+        "--mat",
+        default="?",
+        help="material name to use for SOLID SECTION (defaults to '?')",
     )
     parser.add_argument(
         "set",
