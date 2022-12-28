@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2022-12-28T01:08:14+0100
+# Last modified: 2022-12-28T22:01:28+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -15,7 +15,7 @@ import math
 import os
 import sys
 
-__version__ = "2022.12.26"
+__version__ = "2022.12.28"
 
 
 def main():
@@ -31,6 +31,8 @@ def main():
     logging.info(f"read {len(all_elements)} elements from “all.msh”")
     elements = {}
     for setname in args.set:
+        if setname.endswith(".nam"):
+            setname = setname[:-4]
         elements[setname] = read_named_set(setname, all_elements)
         logging.info(f"read {len(elements[setname])} elements from set “{setname}”")
     nlist = set_normals(elements)
@@ -43,13 +45,6 @@ def main():
             logging.debug(f"normal ({normal[0]}, {normal[1]}, {normal[2]})")
             write_orientation(normal, n, outnam)
             write_elsets(n, elnums, elements, outnam, outinp)
-            # outnam.write(f"*ELSET,ELSET=Eaor{n}" + os.linesep)
-            # for number in elnums:
-            #     outnam.write(f"{number}," + os.linesep)
-            # outinp.write(
-            #    f"*SOLID SECTION, ELSET=Eaor{n}, ORIENTATION=aor{n}, MATERIAL={args.mat}"
-            # )
-            # outinp.write(os.linesep)
             n += 1
 
 
@@ -68,12 +63,6 @@ def setup():
         default="warning",
         choices=["debug", "info", "warning", "error"],
         help="logging level (defaults to 'warning')",
-    )
-    parser.add_argument(
-        "-m",
-        "--mat",
-        default="?",
-        help="material name to use for SOLID SECTION (defaults to '?')",
     )
     parser.add_argument(
         "set",

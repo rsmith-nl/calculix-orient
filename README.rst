@@ -5,7 +5,7 @@ calculix-orient
 :tags: CalculiX
 :author: Roland Smith
 
-.. Last modified: 2022-12-27T10:10:46+0100
+.. Last modified: 2022-12-28T22:08:15+0100
 .. vim:spelllang=en
 
 This program examines a CalculiX mesh, and generates orientations for the
@@ -49,9 +49,7 @@ This writes two files; ``auto-orient.nam`` and ``auto-orient.inp``
 Include these in your job input file.
 The first file containts new element sets and orientations, while the second
 contains the ``SOLID SECTION`` commands.
-If the ``-m`` or ``--mat`` argument to ``auto-orient.py`` is used, the
-given material is used for all the the solid sections.
-
+In the ``SOLID SECTION`` commands, the ``MATERIAL`` is set to ``M<setname>``.
 
 Example
 =======
@@ -63,6 +61,9 @@ The subject of this simulation is an omega profile made from carbon fiber and
 epoxy, in a quasi-isotropic layup.
 This geometry should have several many different orientations, depending on how fine the
 mesh is.
+Note that the stresses in this example are not accurate! The material
+properties of the laminate are synthesized into a single value.
+For accurate stresses, the mesh should be built up out of separate layers.
 
 
 The workflow (in a terminal emulator) is as follows:
@@ -78,7 +79,7 @@ The workflow (in a terminal emulator) is as follows:
    the material to ``Mqi``.
 
 You can run one of the predefined ``view-*.fbd`` files to show you the
-displacment, mesh, element sets or stress::
+displacment, mesh, element sets or strain::
 
    cgx -b view-sets.fbd
 
