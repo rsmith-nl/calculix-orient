@@ -5,9 +5,9 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2022-12-27T09:59:14+0100
-"""Generate orientations and sets of elements that use them for a given
-initial set of elements."""
+# Last modified: 2022-12-28T01:08:14+0100
+"""Generate orientations and sets of elements that use them for given
+initial sets of elements."""
 
 import argparse
 import logging
@@ -31,51 +31,25 @@ def main():
     logging.info(f"read {len(all_elements)} elements from “all.msh”")
     elements = {}
     for setname in args.set:
-        elements.update(read_named_set(setname, all_elements))
-    logging.info(f"read {len(elements)} elements from set “{args.set}”")
+        elements[setname] = read_named_set(setname, all_elements)
+        logging.info(f"read {len(elements[setname])} elements from set “{setname}”")
     nlist = set_normals(elements)
-    logging.info(f"“{args.set}” contains {len(nlist)} unique normals")
-    result = []
+    logging.info(f"the given set(s) contain {len(nlist)} unique normals")
     n = 1
     with open("auto-orient.nam", "wt") as outnam, open(
         "auto-orient.inp", "wt"
     ) as outinp:
         for normal, elnums in nlist:
             logging.debug(f"normal ({normal[0]}, {normal[1]}, {normal[2]})")
-            factorx = dot(normal, (1.0, 0.0, 0.0))
-            if math.isclose(factorx, 1.0):
-                logging.warning("normal lies in global X")
-                locx = (0.0, 0.0, -1.0)
-                locy = (0.0, 1.0, 0.0)
-            elif math.isclose(factorx, 0.0):
-                logging.info("normal is perpendicular to global X")
-                locx = (1.0, 0.0, 0.0)
-            else:
-                locx = normalize((normal[0] + factorx, normal[1], normal[2]))
-            factory = dot(normal, (0.0, 1.0, 0.0))
-            if math.isclose(factory, 1.0):
-                logging.warning("normal lies in global Y")
-                locx = (1.0, 0.0, 0.0)
-                locy = (0.0, 0.0, -1.0)
-            elif math.isclose(factory, 0.0):
-                logging.info("normal is perpendicular to global Y")
-                locy = (0.0, 1.0, 0.0)
-            else:
-                locy = normalize((normal[0], normal[1] + factory, normal[2]))
-            result.append((locx, locy, elnums))
-            outnam.write(f"*ORIENTATION, NAME=aor{n}, SYSTEM=RECTANGULAR" + os.linesep)
-            # We're using full precision here. Orientations are *very* sensitive
-            outnam.write(
-                f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}"
-            )
-            outnam.write(os.linesep + os.linesep)
-            outnam.write(f"*ELSET,ELSET=Eaor{n}" + os.linesep)
-            for number in elnums:
-                outnam.write(f"{number}," + os.linesep)
-            outinp.write(
-                f"*SOLID SECTION, ELSET=Eaor{n}, ORIENTATION=aor{n}, MATERIAL={args.mat}"
-            )
-            outinp.write(os.linesep)
+            write_orientation(normal, n, outnam)
+            write_elsets(n, elnums, elements, outnam, outinp)
+            # outnam.write(f"*ELSET,ELSET=Eaor{n}" + os.linesep)
+            # for number in elnums:
+            #     outnam.write(f"{number}," + os.linesep)
+            # outinp.write(
+            #    f"*SOLID SECTION, ELSET=Eaor{n}, ORIENTATION=aor{n}, MATERIAL={args.mat}"
+            # )
+            # outinp.write(os.linesep)
             n += 1
 
 
@@ -201,26 +175,27 @@ def set_normals(elements):
     Determine the unique normals of the elements in the set.
 
     Arguments:
-        elements: a dictionary of elements
+        elements: a dict_values of elements
 
     Returns:
         A list of 2-tuples. Each tuple consists of a normal vector (3-tuple of float)
         and a tuple of element numbers that have this normal vector.
     """
     ndict = {}
-    for num, nodes in elements.items():
-        normal = normalize(cross(sub(nodes[1], nodes[0]), sub(nodes[2], nodes[1])))
-        # Make normals +z
-        if normal[2] < 0:
-            normal = (-normal[0], -normal[1], -normal[2])
-        found = False
-        for n in ndict.keys():
-            if isclose(normal, n):
-                ndict[n].append(num)
-                found = True
-                break
-        if not found:
-            ndict[normal] = [num]
+    for j in elements.values():
+        for num, nodes in j.items():
+            normal = normalize(cross(sub(nodes[1], nodes[0]), sub(nodes[2], nodes[1])))
+            # Make normals +z
+            if normal[2] < 0:
+                normal = (-normal[0], -normal[1], -normal[2])
+            found = False
+            for n in ndict.keys():
+                if isclose(normal, n):
+                    ndict[n].append(num)
+                    found = True
+                    break
+            if not found:
+                ndict[normal] = [num]
     return list(ndict.items())
 
 
@@ -298,7 +273,58 @@ def normalize(v):
         The scaled tuple.
     """
     ln = sum(j * j for j in v) ** 0.5
-    return tuple(j / ln for j in v)
+    return tuple(round(j / ln, 9) for j in v)
+
+
+def write_orientation(normal, n, outnam):
+    """
+    Write *ORIENTATION card.
+
+    Arguments:
+        normal: normal vector; 3-tuple of numbers
+        n: number of the oriëntation
+        outnam: file to write to
+    """
+    factorx = dot(normal, (1.0, 0.0, 0.0))
+    if math.isclose(factorx, 1.0):
+        logging.warning("normal lies in global X")
+        locx = (0.0, 0.0, -1.0)
+        locy = (0.0, 1.0, 0.0)
+    elif math.isclose(factorx, 0.0):
+        logging.info("normal is perpendicular to global X")
+        locx = (1.0, 0.0, 0.0)
+    else:
+        locx = normalize((normal[0] + factorx, normal[1], normal[2]))
+    factory = dot(normal, (0.0, 1.0, 0.0))
+    if math.isclose(factory, 1.0):
+        logging.warning("normal lies in global Y")
+        locx = (1.0, 0.0, 0.0)
+        locy = (0.0, 0.0, -1.0)
+    elif math.isclose(factory, 0.0):
+        logging.info("normal is perpendicular to global Y")
+        locy = (0.0, 1.0, 0.0)
+    else:
+        locy = normalize((normal[0], normal[1] + factory, normal[2]))
+    outnam.write(os.linesep)
+    outnam.write(f"*ORIENTATION, NAME=aor{n}, SYSTEM=RECTANGULAR" + os.linesep)
+    # We're using full precision here. Orientations are *very* sensitive
+    outnam.write(
+        f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}"
+    )
+    outnam.write(os.linesep + os.linesep)
+
+
+def write_elsets(n, elnums, elements, outnam, outinp):
+    for setname, elist in elements.items():
+        active = set(elnums) & set(elist)
+        if active:
+            outnam.write(os.linesep)
+            outnam.write(f"*ELSET,ELSET=Eaor{n}-{setname}" + os.linesep)
+            for number in active:
+                outnam.write(f"{number}," + os.linesep)
+            outinp.write(f"*SOLID SECTION, ELSET=Eaor{n}-{setname}, ")
+            outinp.write(f"ORIENTATION=aor{n}, MATERIAL=M{setname}")
+            outinp.write(os.linesep)
 
 
 if __name__ == "__main__":
