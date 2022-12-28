@@ -275,11 +275,11 @@ col vir256 0.993248 0.906157 0.143936
 
 # Show the element edges
 view elem
-plot e Eaor1 vir010
-plus e Eaor2 vir020
-plus e Eaor3 vir030
-plus e Eaor4 vir040
-plus e Eaor5 vir050
-plus e Eaor6 vir060
-plus e Eaor7 vir070
-plus e Eaor8 vir080
+plot e Eaor1-laminate vir010
+plus e Eaor2-laminate vir020
+plus e Eaor3-laminate vir030
+plus e Eaor4-laminate vir040
+plus e Eaor5-laminate vir050
+plus e Eaor6-laminate vir060
+plus e Eaor7-laminate vir070
+plus e Eaor8-laminate vir080

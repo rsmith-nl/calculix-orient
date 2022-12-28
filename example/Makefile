@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2022-12-26T10:13:23+0100
-# Last modified: 2022-12-27T10:01:41+0100
+# Last modified: 2022-12-28T22:07:52+0100
 .PHONY: mesh disp stress core clean include
 
 all: all.msh job.frd
@@ -14,7 +14,7 @@ all.msh: pre.fbd geom.fbd
 
 # This command generates both auto-orient.nam and auto-orient.inp
 auto-orient.nam: all.msh
-	python ../auto-orient.py -m Mqi laminate.nam
+	python ../auto-orient.py laminate.nam
 
 # Run the solver
 # Note: to take advantage of multiple cores,
@@ -38,15 +38,15 @@ disp: job.frd view-disp.fbd
 sets: job.frd view-sets.fbd
 	cgx -b view-sets.fbd
 
-# view stress
-stress: job.frd view-stress.fbd
-	cgx -b view-stress.fbd
+# view strain
+strain: job.frd view-strain.fbd
+	cgx -b view-strain.fbd
 
 
 # Helpers
 clean::
 	rm -f *.equ *.sur *.nam *.msh *.log spooles.out *.12d *.cvg *.sta *.con
-	rm -f sections.inp job.frd job.dat
+	rm -f auto-orient.inp job.frd job.dat
 
 include::
 	@ls *.msh *.nam *.sur *.equ *.con|sed -e 's/^/\*INCLUDE, INPUT=/'

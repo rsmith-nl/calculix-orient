@@ -1,0 +1,24 @@
+# file: layers.lam
+# vim:fileencoding=utf-8:fdm=marker:ft=lamprop
+#
+# Author: R.F. Smith <rsmith@xs4all.nl>
+# Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
+# Created: 2022-12-27T21:36:08+0100
+# Last modified: 2022-12-28T22:13:41+0100
+
+   E1     v12  alpha1   rho  naam
+f: 233000 0.20 -0.38e-6 1.80 T700SC
+f: 230000  0.27 -0.41e-6 1.76 ToracyaT300
+f: 238000 0.20 -0.1e-6  1.77 STS5631
+f: 238000 0.20 -0.1e-6  1.77 UTS5631
+
+Matrix definitie
+   Em   v    alpha   rho name
+r:  3600 0.36 60e-6 1.145 atlac-430
+
+t: Mlaminate
+m: 0.4 atlac-430
+l: 300    0  ToracyaT300
+l: 300   45  ToracyaT300
+l: 300  -45  ToracyaT300
+l: 300    0  ToracyaT300

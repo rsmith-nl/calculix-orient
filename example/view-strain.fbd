@@ -10,10 +10,8 @@ read job.inp
 #copy all new mir y
 #comp all do
 
-# First line of text below the window.
 capt Carbon/epoxy omega profile
-# Second line of text.
-ulin Worst principal stress
+ulin Worst principal strain
 
 # Define the view.
 rot y
@@ -21,14 +19,8 @@ rot r 45
 rot u 30
 frame
 
-# Stress
-# Use the “turbo” colormap.
 cmap turbo
-# ds 4 is zzstr. e23 is worstPS
-ds 4 e 23
-# View the deformed state.
+ds 2 e 23
 view disp
-# Don't use shading.
 view sh off
-# Show the element borders
 view elem
