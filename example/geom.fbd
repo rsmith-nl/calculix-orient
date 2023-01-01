@@ -14,8 +14,8 @@ valu rdiv 8
 # Horizontal rectangle below
 pnt P1 0 0 0
 pnt P2 0 0 0.0017
-pnt P3 0 0.006 0
-pnt P4 0 0.006 0.0017
+pnt P3 0 0.0063 0
+pnt P4 0 0.0063 0.0017
 line L1 P1 P3 ldiv
 line L2 P3 P4 tdiv
 line L3 P4 P2 ldiv
@@ -23,24 +23,24 @@ line L4 P2 P1 tdiv
 surf S1 L1 L2 L3 L4
 
 # Arc up
-pnt P5 0 0.006 0.004 # arc center
-pnt P6 0 0.0083 0.004
-pnt P7 0 0.010 0.004
+pnt P5 0 0.0063 0.0037 # arc center
+pnt P6 0 0.0083 0.0037
+pnt P7 0 0.010 0.0037
 line L5 P4 P6 P5 rdiv
 line L6 P3 P7 P5 rdiv
 line L7 P6 P7 tdiv
 surf S2 L6 L7 L5 L2
 
 # vertical rectangle
-pnt P8 0 0.0083 0.008
-pnt P9 0 0.010 0.008
+pnt P8 0 0.0083 0.0083
+pnt P9 0 0.010 0.0083
 line L8 P7 P9 ldiv
 line L9 P9 P8 tdiv
 line L10 P8 P6 ldiv
 surf S3 L8 L9 L10 L7
 
 # Arc to horizontal
-pnt P10 0 0.012 0.008
+pnt P10 0 0.012 0.0083
 pnt P11 0 0.012 0.0103
 pnt P12 0 0.012 0.012
 line L11 P9 P11 P10 rdiv
