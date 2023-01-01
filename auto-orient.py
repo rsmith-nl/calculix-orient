@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2022-12-28T22:01:28+0100
+# Last modified: 2023-01-01T01:09:04+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -189,7 +189,8 @@ def set_normals(elements):
 
 
 def isclose(u, v):
-    """Determine if two vectors are close.
+    """
+    Determine if two vectors are close.
 
     Arguments:
         u: 3-tuple of numbers
@@ -295,6 +296,7 @@ def write_orientation(normal, n, outnam):
     else:
         locy = normalize((normal[0], normal[1] + factory, normal[2]))
     outnam.write(os.linesep)
+    outnam.write(f"** normal: {normal[0]:.4f} {normal[1]:.4f} {normal[2]:.4f}"+os.linesep)
     outnam.write(f"*ORIENTATION, NAME=aor{n}, SYSTEM=RECTANGULAR" + os.linesep)
     # We're using full precision here. Orientations are *very* sensitive
     outnam.write(
