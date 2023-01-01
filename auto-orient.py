@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-01-01T01:09:04+0100
+# Last modified: 2023-01-01T02:32:28+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -90,9 +90,6 @@ def setup():
 def read_allmsh():
     """
     Read and return the elements from “all.msh”
-
-    Arguments:
-        none
 
     Returns:
         A dict of all the elements indexed by element number.
