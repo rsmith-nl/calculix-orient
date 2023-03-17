@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-03-17T12:10:45+0100
+# Last modified: 2023-03-17T15:15:13+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -92,7 +92,8 @@ def read_allmsh():
 
     Returns:
         A dict of all the elements indexed by element number.
-        Node numbers have been resolved to the actual nodes.
+        An element is a tuple of nodes.
+        (Node numbers have been resolved to the actual nodes.)
     """
     with open("all.msh") as f:
         lines = [ln.strip() for ln in f.readlines()]
@@ -160,7 +161,7 @@ def set_normals(elements):
     Determine the unique normals of the elements in the set.
 
     Arguments:
-        elements: a dict_values of elements
+        elements: a dict of elements, keyed by set name.
 
     Returns:
         A list of 2-tuples. Each tuple consists of a normal vector (3-tuple of float)
