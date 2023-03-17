@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-01-01T02:32:28+0100
+# Last modified: 2023-03-17T12:10:45+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -23,7 +23,6 @@ def main():
     Entry point for auto-orient.py
     """
     args = setup()
-    # Real work starts here.
     if not os.path.exists("all.msh"):
         logging.error("no “all.msh” file found; exiting")
         sys.exit(1)
@@ -188,13 +187,14 @@ def set_normals(elements):
 def isclose(u, v):
     """
     Determine if two vectors are close.
+    It is assumed that the vectors are both normalized (scaled to length = 1).
 
     Arguments:
         u: 3-tuple of numbers
         v: 3-tuple of numbers
 
     Returns:
-        True is u anv v are equal, False otherwise
+        True if u and v are equal, False otherwise
     """
     return all(math.isclose(u[j], v[j]) for j in (0, 1, 2))
 
