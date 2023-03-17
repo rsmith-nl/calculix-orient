@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-03-17T15:20:14+0100
+# Last modified: 2023-03-17T15:21:55+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -172,9 +172,11 @@ def set_normals(elements):
         for num, nodes in j.items():
             # A hex element has three basic vectors.
             bases = [
-                sub(nodes[4], nodes[0]), sub(nodes[1], nodes[0]), sub(nodes[3], nodes[0])
+                sub(nodes[4], nodes[0]),
+                sub(nodes[1], nodes[0]),
+                sub(nodes[3], nodes[0]),
             ]
-            bases.sort(key=lambda v: -sum(j*j for j in v))
+            bases.sort(key=lambda v: -sum(j * j for j in v))
             # The normal is perpendicular to the two longest bases.
             normal = normalize(cross(bases[0], bases[1]))
             # Make normals +z
@@ -300,12 +302,12 @@ def write_orientation(normal, n, outnam):
     else:
         locy = normalize((normal[0], normal[1] + factory, normal[2]))
     outnam.write(os.linesep)
-    outnam.write(f"** normal: {normal[0]:.4f} {normal[1]:.4f} {normal[2]:.4f}"+os.linesep)
+    outnam.write(
+        f"** normal: {normal[0]:.4f} {normal[1]:.4f} {normal[2]:.4f}" + os.linesep
+    )
     outnam.write(f"*ORIENTATION, NAME=aor{n}, SYSTEM=RECTANGULAR" + os.linesep)
     # We're using full precision here. Orientations are *very* sensitive
-    outnam.write(
-        f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}"
-    )
+    outnam.write(f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}")
     outnam.write(os.linesep + os.linesep)
 
 
