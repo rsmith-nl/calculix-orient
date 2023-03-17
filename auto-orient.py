@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-03-17T15:17:05+0100
+# Last modified: 2023-03-17T15:20:14+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -203,7 +203,7 @@ def isclose(u, v):
     Returns:
         True if u and v are equal, False otherwise
     """
-    return all(math.isclose(u[j], v[j]) for j in (0, 1, 2))
+    return all(math.isclose(u[j], v[j], rel_tol=1e-2) for j in (0, 1, 2))
 
 
 def cross(u, v):
