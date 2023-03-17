@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-03-17T15:15:13+0100
+# Last modified: 2023-03-17T15:17:05+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -15,7 +15,7 @@ import math
 import os
 import sys
 
-__version__ = "2022.12.28"
+__version__ = "2023.03.17"
 
 
 def main():
@@ -170,7 +170,13 @@ def set_normals(elements):
     ndict = {}
     for j in elements.values():
         for num, nodes in j.items():
-            normal = normalize(cross(sub(nodes[1], nodes[0]), sub(nodes[2], nodes[1])))
+            # A hex element has three basic vectors.
+            bases = [
+                sub(nodes[4], nodes[0]), sub(nodes[1], nodes[0]), sub(nodes[3], nodes[0])
+            ]
+            bases.sort(key=lambda v: -sum(j*j for j in v))
+            # The normal is perpendicular to the two longest bases.
+            normal = normalize(cross(bases[0], bases[1]))
             # Make normals +z
             if normal[2] < 0:
                 normal = (-normal[0], -normal[1], -normal[2])
