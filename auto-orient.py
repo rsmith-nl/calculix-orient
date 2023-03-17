@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-03-17T15:21:55+0100
+# Last modified: 2023-03-17T20:43:00+0100
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -205,7 +205,12 @@ def isclose(u, v):
     Returns:
         True if u and v are equal, False otherwise
     """
-    return all(math.isclose(u[j], v[j], rel_tol=1e-2) for j in (0, 1, 2))
+    angle = math.degrees(math.acos(dot(u, v)))
+    if -1 < angle < 1:
+        return True
+    elif 179 < angle < 181:
+        return True
+    return False
 
 
 def cross(u, v):
@@ -237,7 +242,12 @@ def dot(u, v):
     Returns:
         The dot-product between the vectors.
     """
-    return u[0] * v[0] + u[1] * v[1] + u[2] * v[2]
+    rv = u[0] * v[0] + u[1] * v[1] + u[2] * v[2]
+    if rv > 1.0:
+        rv = 1.0
+    elif rv < -1.0:
+        rv = -1.0
+    return rv
 
 
 def sub(u, v):
