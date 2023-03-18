@@ -3,7 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2022-12-26T10:13:23+0100
-# Last modified: 2022-12-28T22:07:52+0100
+# Last modified: 2023-03-18T17:47:17+0100
 .PHONY: mesh disp stress core clean include
 
 all: all.msh job.frd
@@ -14,7 +14,7 @@ all.msh: pre.fbd geom.fbd
 
 # This command generates both auto-orient.nam and auto-orient.inp
 auto-orient.nam: all.msh
-	python ../auto-orient.py laminate.nam
+	python3 ../auto-orient.py laminate.nam
 
 # Run the solver
 # Note: to take advantage of multiple cores,
