@@ -1,0 +1,8 @@
+*.pyc
+backup-*.tar.gz
+calculix-orient-*.zip
+__pycache__/
+.ropeproject/
+.cache/
+.pytest_cache/
+*~

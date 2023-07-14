@@ -7,7 +7,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2018-01-21 22:44:51 +0100
-# Last modified: 2023-07-14T17:16:18+0200
+# Last modified: 2023-07-14T18:41:48+0200
 .PHONY: clean check format test zip
 
 .if make(zip)
@@ -27,7 +27,6 @@ clean::
 	rm -f backup-*.tar* calculix-orient-*.zip
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name __pycache__ -delete
-	cd doc && make clean
 
 # The targets below are mostly for the maintainer.
 check:: .IGNORE
@@ -37,7 +36,6 @@ test::
 	py.test -v
 
 zip:: clean
-	cd doc && make clean
 	git checkout ${TAG}
 	cd .. && zip -r calculix-orient-${TAG}.zip calculix-orient/ \
 		-x 'calculix-orient/.git/*' '*/.pytest_cache/*' '*/__pycache__/*' '*/.cache/*'
