@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-03-17T20:43:00+0100
+# Last modified: 2023-07-14T17:06:58+0200
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -291,26 +291,15 @@ def write_orientation(normal, n, outnam):
         n: number of the oriëntation
         outnam: file to write to
     """
+
     factorx = dot(normal, (1.0, 0.0, 0.0))
     if math.isclose(factorx, 1.0):
         logging.warning("normal lies in global X")
         locx = (0.0, 0.0, -1.0)
         locy = (0.0, 1.0, 0.0)
-    elif math.isclose(factorx, 0.0):
-        logging.info("normal is perpendicular to global X")
-        locx = (1.0, 0.0, 0.0)
     else:
-        locx = normalize((normal[0] + factorx, normal[1], normal[2]))
-    factory = dot(normal, (0.0, 1.0, 0.0))
-    if math.isclose(factory, 1.0):
-        logging.warning("normal lies in global Y")
-        locx = (1.0, 0.0, 0.0)
-        locy = (0.0, 0.0, -1.0)
-    elif math.isclose(factory, 0.0):
-        logging.info("normal is perpendicular to global Y")
-        locy = (0.0, 1.0, 0.0)
-    else:
-        locy = normalize((normal[0], normal[1] + factory, normal[2]))
+        locy = cross(normal, (1.0, 0.0, 0.0))
+        locx = cross(locy, normal)
     outnam.write(os.linesep)
     outnam.write(
         f"** normal: {normal[0]:.4f} {normal[1]:.4f} {normal[2]:.4f}" + os.linesep
