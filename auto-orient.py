@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-07-14T17:06:58+0200
+# Last modified: 2023-07-14T18:39:46+0200
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -15,7 +15,7 @@ import math
 import os
 import sys
 
-__version__ = "2023.03.17"
+__version__ = "2023.07.14"
 
 
 def main():
