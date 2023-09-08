@@ -5,9 +5,10 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-09-08T23:12:20+0200
-"""Generate orientations and sets of elements that use them for given
-initial sets of elements."""
+# Last modified: 2023-09-08T23:23:06+0200
+"""Generate orientations and sets of elements that use them for given initial
+sets of elements. The local coordinate systems for the orientations are aligned
+with the given base vector."""
 
 import argparse
 import binascii
@@ -40,8 +41,11 @@ def main():
     nlist = set_normals(elements)
     logging.info(f"the given set(s) contain {len(nlist)} unique normals")
     n = 1
-    with open("auto-orient.nam", "at") as outnam, open(
-        "auto-orient.inp", "at"
+    mode = "at"
+    if args.truncate:
+        mode = "wt"
+    with open("auto-orient.nam", mode) as outnam, open(
+        "auto-orient.inp", mode
     ) as outinp:
         for normal, elnums in nlist:
             logging.debug(f"normal ({normal[0]}, {normal[1]}, {normal[2]})")
@@ -71,6 +75,12 @@ def setup():
         "--base",
         default="1.0,0.0,0.0",
         help="x,y,z direction vector; should not contain spaces"
+    )
+    parser.add_argument(
+        "-t",
+        "--truncate",
+        action="store_true",
+        help="truncate auto-orient.nam and auto-orient.inp before writing"
     )
     parser.add_argument(
         "set",
