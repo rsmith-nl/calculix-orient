@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-07-14T18:39:46+0200
+# Last modified: 2023-09-08T21:21:11+0200
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -282,7 +282,7 @@ def normalize(v):
     return tuple(round(j / ln, 9) for j in v)
 
 
-def write_orientation(normal, n, outnam):
+def write_orientation(normal, n, outnam, base=(1.0, 0.0, 0.0)):
     """
     Write *ORIENTATION card.
 
@@ -290,15 +290,16 @@ def write_orientation(normal, n, outnam):
         normal: normal vector; 3-tuple of numbers
         n: number of the oriëntation
         outnam: file to write to
+        base: 3D vector to align the x-axis of the element to.
     """
 
-    factorx = dot(normal, (1.0, 0.0, 0.0))
+    factorx = dot(normal, base)
     if math.isclose(factorx, 1.0):
         logging.warning("normal lies in global X")
         locx = (0.0, 0.0, -1.0)
         locy = (0.0, 1.0, 0.0)
     else:
-        locy = cross(normal, (1.0, 0.0, 0.0))
+        locy = cross(normal, base)
         locx = cross(locy, normal)
     outnam.write(os.linesep)
     outnam.write(
