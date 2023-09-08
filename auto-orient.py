@@ -5,14 +5,16 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-09-08T21:52:47+0200
+# Last modified: 2023-09-08T23:12:20+0200
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
 import argparse
+import binascii
 import logging
 import math
 import os
+import random
 import sys
 
 __version__ = "2023.09.08"
@@ -23,6 +25,7 @@ def main():
     Entry point for auto-orient.py
     """
     args = setup()
+    prefix = binascii.hexlify(random.randbytes(4)).decode("ascii").upper()
     if not os.path.exists("all.msh"):
         logging.error("no “all.msh” file found; exiting")
         sys.exit(1)
@@ -37,13 +40,13 @@ def main():
     nlist = set_normals(elements)
     logging.info(f"the given set(s) contain {len(nlist)} unique normals")
     n = 1
-    with open("auto-orient.nam", "wt") as outnam, open(
-        "auto-orient.inp", "wt"
+    with open("auto-orient.nam", "at") as outnam, open(
+        "auto-orient.inp", "at"
     ) as outinp:
         for normal, elnums in nlist:
             logging.debug(f"normal ({normal[0]}, {normal[1]}, {normal[2]})")
-            write_orientation(normal, n, outnam, args.base)
-            write_elsets(n, elnums, elements, outnam, outinp)
+            write_orientation(normal, n, outnam, prefix, args.base)
+            write_elsets(n, elnums, elements, outnam, outinp, prefix)
             n += 1
 
 
@@ -295,7 +298,7 @@ def normalize(v):
     return tuple(round(j / ln, 9) for j in v)
 
 
-def write_orientation(normal, n, outnam, base=(1.0, 0.0, 0.0)):
+def write_orientation(normal, n, outnam, prefix, base=(1.0, 0.0, 0.0)):
     """
     Write *ORIENTATION card to the open file <outnam>.
     The cross-product of the normal and the base vector is the local y-axis.
@@ -305,13 +308,13 @@ def write_orientation(normal, n, outnam, base=(1.0, 0.0, 0.0)):
         normal: normal vector; 3-tuple of numbers
         n: number of the oriëntation
         outnam: file to write to
+        prefix: string to make the orientation of this run unique
         base: 3D vector to align the x-axis of the element to.
     """
-
     factorx = dot(normal, base)
     if math.isclose(factorx, 1.0):
-        logging.warning("normal lies in global X")
-        locx = (0.0, 0.0, -1.0)
+        logging.warning(f"normal lies in base direction ({prefix}-{n})")
+        locx = (1.0, 0.0, 0.0)
         locy = (0.0, 1.0, 0.0)
     else:
         locy = cross(normal, base)
@@ -320,13 +323,13 @@ def write_orientation(normal, n, outnam, base=(1.0, 0.0, 0.0)):
     outnam.write(
         f"** normal: {normal[0]:.4f} {normal[1]:.4f} {normal[2]:.4f}" + os.linesep
     )
-    outnam.write(f"*ORIENTATION, NAME=aor{n}, SYSTEM=RECTANGULAR" + os.linesep)
+    outnam.write(f"*ORIENTATION, NAME={prefix}-{n}, SYSTEM=RECTANGULAR" + os.linesep)
     # We're using full precision here. Orientations are *very* sensitive
     outnam.write(f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}")
     outnam.write(os.linesep + os.linesep)
 
 
-def write_elsets(n, elnums, elements, outnam, outinp):
+def write_elsets(n, elnums, elements, outnam, outinp, prefix):
     for setname, elist in elements.items():
         active = set(elnums) & set(elist)
         if active:
@@ -335,7 +338,7 @@ def write_elsets(n, elnums, elements, outnam, outinp):
             for number in active:
                 outnam.write(f"{number}," + os.linesep)
             outinp.write(f"*SOLID SECTION, ELSET=Eaor{n}-{setname}, ")
-            outinp.write(f"ORIENTATION=aor{n}, MATERIAL=M{setname}")
+            outinp.write(f"ORIENTATION={prefix}-{n}, MATERIAL=M{setname}")
             outinp.write(os.linesep)
 
 
