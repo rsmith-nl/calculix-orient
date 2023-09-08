@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-09-08T21:21:11+0200
+# Last modified: 2023-09-08T21:52:47+0200
 """Generate orientations and sets of elements that use them for given
 initial sets of elements."""
 
@@ -15,7 +15,7 @@ import math
 import os
 import sys
 
-__version__ = "2023.07.14"
+__version__ = "2023.09.08"
 
 
 def main():
@@ -42,7 +42,7 @@ def main():
     ) as outinp:
         for normal, elnums in nlist:
             logging.debug(f"normal ({normal[0]}, {normal[1]}, {normal[2]})")
-            write_orientation(normal, n, outnam)
+            write_orientation(normal, n, outnam, args.base)
             write_elsets(n, elnums, elements, outnam, outinp)
             n += 1
 
@@ -64,6 +64,12 @@ def setup():
         help="logging level (defaults to 'warning')",
     )
     parser.add_argument(
+        "-b",
+        "--base",
+        default="1.0,0.0,0.0",
+        help="x,y,z direction vector; should not contain spaces"
+    )
+    parser.add_argument(
         "set",
         default="",
         nargs="*",
@@ -78,6 +84,13 @@ def setup():
     )
     logging.debug(f"command-line arguments: {argv}")
     logging.debug(f"processed arguments: {args}")
+    # convert the base vector
+    try:
+        base = tuple(float(j) for j in args.base.split(","))
+        args.base = normalize(base)
+    except ValueError as e:
+        logging.error(f"invalid base vector {args.base}: {e}")
+        sys.exit(6)
     if isinstance(args.set, str):
         if not args.set:
             logging.error("no set given; exiting")
@@ -284,7 +297,9 @@ def normalize(v):
 
 def write_orientation(normal, n, outnam, base=(1.0, 0.0, 0.0)):
     """
-    Write *ORIENTATION card.
+    Write *ORIENTATION card to the open file <outnam>.
+    The cross-product of the normal and the base vector is the local y-axis.
+    The cross-product of the local y-axis and the normal is the local x-axis.
 
     Arguments:
         normal: normal vector; 3-tuple of numbers
