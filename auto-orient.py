@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-09-08T23:23:06+0200
+# Last modified: 2023-09-09T10:30:48+0200
 """Generate orientations and sets of elements that use them for given initial
 sets of elements. The local coordinate systems for the orientations are aligned
 with the given base vector."""
@@ -18,7 +18,7 @@ import os
 import random
 import sys
 
-__version__ = "2023.09.08"
+__version__ = "2023.09.09"
 
 
 def main():
