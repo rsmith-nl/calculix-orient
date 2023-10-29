@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-09-09T10:30:48+0200
+# Last modified: 2023-10-29T22:26:57+0100
 """Generate orientations and sets of elements that use them for given initial
 sets of elements. The local coordinate systems for the orientations are aligned
 with the given base vector."""
@@ -74,13 +74,13 @@ def setup():
         "-b",
         "--base",
         default="1.0,0.0,0.0",
-        help="x,y,z direction vector; should not contain spaces"
+        help="x,y,z direction vector; should not contain spaces",
     )
     parser.add_argument(
         "-t",
         "--truncate",
         action="store_true",
-        help="truncate auto-orient.nam and auto-orient.inp before writing"
+        help="truncate auto-orient.nam and auto-orient.inp before writing",
     )
     parser.add_argument(
         "set",
@@ -329,27 +329,25 @@ def write_orientation(normal, n, outnam, prefix, base=(1.0, 0.0, 0.0)):
     else:
         locy = cross(normal, base)
         locx = cross(locy, normal)
-    outnam.write(os.linesep)
-    outnam.write(
-        f"** normal: {normal[0]:.4f} {normal[1]:.4f} {normal[2]:.4f}" + os.linesep
-    )
-    outnam.write(f"*ORIENTATION, NAME={prefix}-{n}, SYSTEM=RECTANGULAR" + os.linesep)
+    outnam.write("\n")
+    outnam.write(f"** normal: {normal[0]:.4f} {normal[1]:.4f} {normal[2]:.4f}\n")
+    outnam.write(f"*ORIENTATION, NAME={prefix}-{n}, SYSTEM=RECTANGULAR\n")
     # We're using full precision here. Orientations are *very* sensitive
     outnam.write(f"{locx[0]},{locx[1]},{locx[2]}, {locy[0]},{locy[1]},{locy[2]}")
-    outnam.write(os.linesep + os.linesep)
+    outnam.write("\n" + "\n")
 
 
 def write_elsets(n, elnums, elements, outnam, outinp, prefix):
     for setname, elist in elements.items():
         active = set(elnums) & set(elist)
         if active:
-            outnam.write(os.linesep)
-            outnam.write(f"*ELSET,ELSET=Eaor{n}-{setname}" + os.linesep)
+            outnam.write("\n")
+            outnam.write(f"*ELSET,ELSET=Eaor{n}-{setname}\n")
             for number in active:
-                outnam.write(f"{number}," + os.linesep)
+                outnam.write(f"{number},\n")
             outinp.write(f"*SOLID SECTION, ELSET=Eaor{n}-{setname}, ")
             outinp.write(f"ORIENTATION={prefix}-{n}, MATERIAL=M{setname}")
-            outinp.write(os.linesep)
+            outinp.write("\n")
 
 
 if __name__ == "__main__":
