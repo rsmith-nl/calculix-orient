@@ -5,7 +5,7 @@
 # Copyright © 2022 R.F. Smith <rsmith@xs4all.nl>
 # SPDX-License-Identifier: MIT
 # Created: 2022-12-22T22:45:41+0100
-# Last modified: 2023-10-29T22:26:57+0100
+# Last modified: 2024-07-14T08:30:16+0200
 """Generate orientations and sets of elements that use them for given initial
 sets of elements. The local coordinate systems for the orientations are aligned
 with the given base vector."""
@@ -112,7 +112,7 @@ def setup():
     return args
 
 
-def read_allmsh():
+def read_allmsh(path="all.msh"):
     """
     Read and return the elements from “all.msh”
 
@@ -121,7 +121,7 @@ def read_allmsh():
         An element is a tuple of nodes.
         (Node numbers have been resolved to the actual nodes.)
     """
-    with open("all.msh") as f:
+    with open(path) as f:
         lines = [ln.strip() for ln in f.readlines()]
     cmds = [(num, ln) for num, ln in enumerate(lines) if ln.startswith("*")]
     if not cmds[0][1].startswith("*NODE") or cmds[0][0] != 0:
@@ -136,22 +136,18 @@ def read_allmsh():
         sys.exit(2)
     ns, ne = cmds[0][0] + 1, cmds[1][0]
     es = ne + 1
-
-    def to_node(items):
-        return (int(items[0]), tuple(float(j) for j in items[1:]))
-
-    nodes = dict([to_node(ln.strip().split(",")) for ln in lines[ns:ne]])
-
+    # Read nodes
+    nstep1 = (ln.split(",") for ln in lines[ns:ne])
+    nodes = dict(
+        (int(items[0]), tuple(float(j) for j in items[1:])) for items in nstep1
+    )
+    # Read C3D20(R) elements
     starts = (ln for ln in lines[es:] if ln.endswith(","))
     ends = (ln for ln in lines[es:] if not ln.endswith(","))
-
-    def to_element(s, e):
-        items = tuple(int(j) for j in s.split(",")[:-1]) + tuple(
-            int(j) for j in e.split(",")
-        )
-        return (items[0], tuple(nodes[k] for k in items[1:]))
-
-    elements = dict([to_element(s, e) for s, e in zip(starts, ends)])
+    estep1 = ((s + e).split(",") for s, e in zip(starts, ends))
+    elements = dict(
+        (int(items[0]), tuple(nodes[int(k)] for k in items[1:])) for items in estep1
+    )
     return elements
 
 
