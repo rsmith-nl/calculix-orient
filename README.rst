@@ -5,7 +5,7 @@ calculix-orient
 :tags: CalculiX
 :author: Roland Smith
 
-.. Last modified: 2023-09-09T10:30:12+0200
+.. Last modified: 2026-05-10T13:46:10+0200
 .. vim:spelllang=en
 
 This program examines a CalculiX mesh, and generates orientations for the
@@ -38,6 +38,15 @@ Then a ``*SOLID SECTION`` referencing both.
 The names of the orientations contain a prefix that is randomly generated for
 each run. This is done so that the orientations created in multiple
 invocations do not conflict.
+
+
+No AI policy
+============
+
+This program is written by a human and for humans.
+
+Writing a program such as this requires domain expertise and judgement.
+Therefore “AI” / LLM-generated rewrites and additions are not welcome.
 
 
 .. PELICAN_END_SUMMARY
